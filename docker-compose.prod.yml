@@ -1,0 +1,42 @@
+version: '3.8'
+
+# Docker Compose para produção
+# Uso: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up
+
+services:
+  # Backend Django REST Framework (produção)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      - DEBUG=0
+      - DATABASE_URL=postgresql://newsletter_user:newsletter_pass@db:5432/newsletter_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - backend_static:/app/static
+      - backend_media:/app/media
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             gunicorn --bind 0.0.0.0:8000 --workers 3 config.wsgi:application"
+
+  # Frontend React (produção)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    environment:
+      - REACT_APP_API_URL=/api
+
+  # Nginx habilitado para produção
+  nginx:
+    profiles: []  # Remove o profile para habilitar em produção
+
+volumes:
+  backend_static:
+    driver: local
