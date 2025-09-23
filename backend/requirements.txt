@@ -2,6 +2,7 @@
 Django==5.0.1
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
+django-filter==23.5
 
 # Database (usando psycopg2-binary para evitar compilação)
 psycopg2-binary==2.9.9
@@ -11,6 +12,7 @@ djangorestframework-simplejwt==5.3.0
 
 # Configuração
 python-decouple==3.8
+dj-database-url==2.1.0
 
 # Servidor de produção
 gunicorn==21.2.0

@@ -21,9 +21,8 @@ RUN pip install --upgrade pip && \
 # Copiar código da aplicação
 COPY . /app/
 
-# Copiar e dar permissão ao script de inicialização
-COPY entrypoint.sh /app/
-RUN chmod +x /app/entrypoint.sh
+# Instalar netcat para verificação de conectividade
+RUN apt-get update && apt-get install -y netcat-traditional && rm -rf /var/lib/apt/lists/*
 
 # Criar diretórios necessários
 RUN mkdir -p /app/media /app/static && \
@@ -35,8 +34,8 @@ USER django
 # Expor porta
 EXPOSE 8000
 
-# Usar o script de inicialização
-ENTRYPOINT ["/app/entrypoint.sh"]
+# Usar comando direto sem entrypoint
+# ENTRYPOINT será definido no docker-compose
 
 # Comando padrão (pode ser sobrescrito no docker-compose)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar dependências
-RUN npm ci --only=production && npm cache clean --force
+RUN npm install --only=production && npm cache clean --force
 
 # Stage para desenvolvimento
 FROM node:18-alpine as development
@@ -17,7 +17,7 @@ WORKDIR /app
 
 # Instalar dependências de desenvolvimento
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 # Copiar código fonte
 COPY . .
@@ -41,7 +41,7 @@ WORKDIR /app
 COPY . .
 
 # Instalar todas as dependências (incluindo devDependencies)
-RUN npm ci
+RUN npm install
 
 # Build da aplicação
 RUN npm run build

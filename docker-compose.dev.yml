@@ -41,6 +41,11 @@ services:
     environment:
       - DEBUG=1
       - DATABASE_URL=postgresql://newsletter_user:newsletter_pass@db:5432/newsletter_db
+      - DB_HOST=db
+      - DB_NAME=newsletter_db
+      - DB_USER=newsletter_user
+      - DB_PASSWORD=newsletter_pass
+      - DB_PORT=5432
       - REDIS_URL=redis://redis:6379/0
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -54,7 +59,13 @@ services:
     networks:
       - newsletter_network
     command: >
-      sh -c "python manage.py migrate &&
+      sh -c "echo 'Aguardando banco de dados...' &&
+             while ! nc -z db 5432; do sleep 1; done &&
+             echo 'Banco de dados disponível!' &&
+             python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py shell -c \"from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.filter(is_superuser=True).exists() or User.objects.create_superuser('admin', 'admin@example.com', 'admin123')\" &&
+             echo 'Iniciando servidor Django...' &&
              python manage.py runserver 0.0.0.0:8000"
 
   # Frontend React (desenvolvimento)
