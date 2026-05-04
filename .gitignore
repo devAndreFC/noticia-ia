@@ -328,3 +328,5 @@ dist/
 # Local configuration overrides
 local_settings.py
 settings_local.py
+
+.teste
